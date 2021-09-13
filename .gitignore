@@ -2,6 +2,7 @@
 *.vsp
 *.vspx
 .vs
+.DS_Store
 Dependencies.props
 FileZilla*.suo
 FileZilla.VC.VC.opendb
