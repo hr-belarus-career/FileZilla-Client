@@ -29,6 +29,7 @@
 #endif
 
 #include <algorithm>
+#include "dragdropmanager.h"
 
 class CTreeItemData : public wxTreeItemData
 {
@@ -976,13 +977,15 @@ void CLocalTreeView::OnBeginDrag(wxTreeEvent& event)
 	// Don't use wxFileDataObject on Mac, crashes on Mojave, wx bug #18232
 	CLocalDataObject obj;
 	obj.AddFile(dir);
+	pDragDropManager->localDataObj = &obj;
+	pDragDropManager->remoteDataObj = NULL;
 #else
 	wxFileDataObject obj;
 	obj.AddFile(dir);
 #endif
 
-	wxDropSource source(this);
-	source.SetData(obj);
+	wxDropSource2 source(obj, this);
+
 	int res = source.DoDragDrop(wxDrag_AllowMove);
 
 	bool handled_internally = pDragDropManager->pDropTarget != 0;

@@ -752,7 +752,7 @@ void CRemoteListView::SetDirectoryListing(std::shared_ptr<CDirectoryListing> con
 		std::wstring const path = m_pDirectoryListing->path.GetPath();
 
 		CFilterManager const& filter = m_state.GetStateFilterManager();
-		
+
 		for (unsigned int i = 0; i < m_pDirectoryListing->size(); ++i) {
 			const CDirentry& entry = (*m_pDirectoryListing)[i];
 			CGenericFileData data;
@@ -1697,7 +1697,7 @@ void CRemoteListView::OnMenuChmod(wxCommandEvent&)
 {
 	Site const& site = m_state.GetSite();
 	auto protocol = site.server.GetProtocol();
-	
+
 	if (!m_state.IsRemoteConnected() || !m_state.IsRemoteIdle()) {
 		wxBell();
 		return;
@@ -1895,7 +1895,7 @@ void CRemoteListView::ApplyCurrentFilter()
 			++hidden;
 			continue;
 		}
-	
+
 		if (entry.is_dir()) {
 			++totalDirCount;
 		}
@@ -1947,7 +1947,7 @@ std::vector<std::wstring> CRemoteListView::RememberSelectedItems(std::wstring& f
 			if (item < 0) {
 				break;
 			}
-			
+
 			if (!item) {
 				selectedNames.push_back(L"..");
 			}
@@ -2262,8 +2262,12 @@ void CRemoteListView::OnBeginDrag(wxListEvent&)
 
 	CLabelEditBlocker b(*this);
 
-	wxDropSource source(this);
-	source.SetData(object);
+#ifdef __WXMAC__
+	pDragDropManager->remoteDataObj = pRemoteDataObject;
+	pDragDropManager->localDataObj = NULL;
+#endif
+
+	wxDropSource2 source(object, this);
 
 	int res = source.DoDragDrop();
 
@@ -2806,6 +2810,7 @@ void CRemoteListView::OnMenuNewfile(wxCommandEvent&)
 		return;
 	}
 
-	CFileTransferCommand *cmd = new CFileTransferCommand(memory_reader_factory(L"Empty file", std::string_view()), m_pDirectoryListing->path, newFileName, transfer_flags());
+    CFileTransferCommand *cmd = new CFileTransferCommand(memory_reader_factory(L"Empty file", std::string_view()), m_pDirectoryListing->path, newFileName, transfer_flags());
+//	CFileTransferCommand *cmd = new CFileTransferCommand(emptyfile, m_pDirectoryListing->path, newFileName, transfer_flags());
 	m_state.m_pCommandQueue->ProcessCommand(cmd);
 }

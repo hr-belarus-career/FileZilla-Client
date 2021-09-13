@@ -20,6 +20,7 @@
 #include <wx/menu.h>
 
 #include <algorithm>
+#include "dragdropmanager.h" //exended DnD
 
 
 class CItemData : public wxTreeItemData
@@ -604,7 +605,7 @@ void CRemoteTreeView::RefreshItem(wxTreeItemId parent, const CDirectoryListing& 
 	std::vector<wxTreeItemId> toDelete;
 
 	bool inserted = false;
-	
+
 	wxTreeItemIdValue unused;
 	child = GetFirstChild(parent, unused);
 
@@ -877,8 +878,12 @@ void CRemoteTreeView::OnBeginDrag(wxTreeEvent& event)
 	pDragDropManager->site = site;
 	pDragDropManager->remoteParent = parent;
 
-	wxDropSource source(this);
-	source.SetData(object);
+#ifdef __WXMAC__
+	pDragDropManager->remoteDataObj = pRemoteDataObject;
+	pDragDropManager->localDataObj = NULL;
+#endif
+
+	wxDropSource2 source(object,this);
 
 	int res = source.DoDragDrop();
 

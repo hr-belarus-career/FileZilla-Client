@@ -392,7 +392,7 @@ regular_dir:
 
 		auto result = local_filesys.begin_find_files(fz::to_native(m_dir.GetPath()), false);
 		if (!result) {
-			
+
 			if (result.error_ == fz::result::noperm) {
 				SetInfoText(_("You do not have permission to list this directory"));
 			}
@@ -814,20 +814,20 @@ void CLocalListView::OnContextMenu(wxContextMenuEvent& event)
 	item->SetBitmap(wxArtProvider::GetBitmap(_T("ART_UPLOADADD"), wxART_MENU));
 	menu.Append(item);
 	menu.Append(XRCID("ID_ENTER"), _("E&nter directory"), _("Enter selected directory"));
-	
+
 	menu.AppendSeparator();
-	menu.Append(XRCID("ID_OPEN"), _("&Open"), _("Open the file."));		
+	menu.Append(XRCID("ID_OPEN"), _("&Open"), _("Open the file."));
 	menu.Append(XRCID("ID_EDIT"), _("&Edit"), _("Edit the file with the configured editor and upload changes to the server."));
-		
+
 	menu.AppendSeparator();
-	menu.Append(XRCID("ID_MKDIR"), _("&Create directory"), _("Create a new subdirectory in the current directory"));		
+	menu.Append(XRCID("ID_MKDIR"), _("&Create directory"), _("Create a new subdirectory in the current directory"));
 	menu.Append(XRCID("ID_MKDIR_CHGDIR"), _("Create director&y and enter it"), _("Create a new subdirectory in the current directory and change into it"));
 	menu.Append(XRCID("ID_CONTEXT_REFRESH"), _("Re&fresh"));
-		
+
 	menu.AppendSeparator();
 	menu.Append(XRCID("ID_DELETE"),_("&Delete"), _("Delete selected files and directories"));
 	menu.Append(XRCID("ID_RENAME"), _("&Rename"), _("Rename selected files and directories"));
-		
+
 	const bool connected = m_state.IsRemoteConnected();
 	if (!connected) {
 		menu.Enable(XRCID("ID_EDIT"), COptions::Get()->get_int(OPTION_EDIT_TRACK_LOCAL) == 0);
@@ -1184,7 +1184,7 @@ bool CLocalListView::OnAcceptRename(const wxListEvent& event)
 void CLocalListView::ApplyCurrentFilter()
 {
 	CStateFilterManager const& filter = m_state.GetStateFilterManager();
-	
+
 	if (!filter.HasSameLocalAndRemoteFilters() && IsComparing()) {
 		ExitComparisonMode();
 	}
@@ -1452,16 +1452,18 @@ void CLocalListView::OnBeginDrag(wxListEvent&)
 		}
 	}
 
+    CDragDropManager* pDragDropManager = CDragDropManager::Init();
+    pDragDropManager->pDragSource = this;
+    pDragDropManager->localParent = m_dir;
+
 #ifdef __WXMAC__
 	// Don't use wxFileDataObject on Mac, crashes on Mojave, wx bug #18232
 	CLocalDataObject obj;
+    pDragDropManager->localDataObj = &obj;
+    pDragDropManager->remoteDataObj = NULL;
 #else
 	wxFileDataObject obj;
 #endif
-
-	CDragDropManager* pDragDropManager = CDragDropManager::Init();
-	pDragDropManager->pDragSource = this;
-	pDragDropManager->localParent = m_dir;
 
 	auto const path = m_dir.GetPath();
 
@@ -1495,8 +1497,7 @@ void CLocalListView::OnBeginDrag(wxListEvent&)
 
 	CLabelEditBlocker b(*this);
 
-	wxDropSource source(this);
-	source.SetData(obj);
+	wxDropSource2 source(obj, this);
 	int res = source.DoDragDrop(wxDrag_AllowMove);
 
 	bool handled_internally = pDragDropManager->pDropTarget != 0;
