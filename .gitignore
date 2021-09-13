@@ -1,3 +1,25 @@
+*.psess
+*.vsp
+*.vspx
+.vs
+Dependencies.props
+FileZilla*.suo
+FileZilla.VC.VC.opendb
+FileZilla.VC.db
+FileZilla.ncb
+FileZilla.opensdf
+FileZilla.sdf
+Makefile
+Makefile.in
+Makefile.user
+bin
+ipch
+lib
+Debug
+Release
+dylibs.copied
+x64
+
 # Prerequisites
 *.d
 
