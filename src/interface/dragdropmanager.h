@@ -7,8 +7,9 @@
 // and drop system.
 
 // As such, keep track on the objects.
-
+#include "../include/serverpath.h"
 #include "serverdata.h"
+#include "dndobjects.h"
 
 class CDragDropManager final
 {
@@ -26,6 +27,9 @@ public:
 	Site site;
 	CServerPath remoteParent;
 
+	CLocalDataObject *localDataObj;
+	CRemoteDataObject *remoteDataObj;
+
 protected:
 	CDragDropManager();
 	virtual ~CDragDropManager() = default;
@@ -33,4 +37,18 @@ protected:
 	static CDragDropManager* m_pDragDropManager;
 };
 
+class wxDropSource2: public wxDropSource
+{
+	public :
+		wxDropSource2( wxDataObject& data, wxWindow *win) {
+			m_data = &data;
+			m_window = win;
+		};
+
+		wxDragResult	DoDragDrop(int flags = wxDrag_CopyOnly) override;
+		wxWindow*			GetWindow() { return m_window ; }
+
+	protected :
+		wxWindow        *m_window;
+};
 #endif
