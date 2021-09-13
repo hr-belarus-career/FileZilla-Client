@@ -1,6 +1,6 @@
 Clone from https://svn.filezilla-project.org/svn/FileZilla3/trunk
 
-#                               FileZilla Client
+                               FileZilla Client
                                ----------------
 
                       Copyright (C) 2004-2020  Tim Kosse
